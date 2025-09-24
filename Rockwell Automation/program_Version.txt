@@ -1,0 +1,2 @@
+RSLogix Micro Starter Lite 8.30.00, which is Rockwell Automation’s free programming software for
+MicroLogix PLCs (like the 1000 and 1100).

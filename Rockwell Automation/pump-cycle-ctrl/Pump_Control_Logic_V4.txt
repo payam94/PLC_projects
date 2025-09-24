@@ -1,0 +1,54 @@
+Pump Control Logic (Timer/Counter Method) - Version 4 (Alarms Reset HOA Modes)
+
+1. Base Timer
+- A 1-second timer runs continuously, independent of HOA mode.
+- Each time it finishes, it increments a counter.
+- The counter cycles from 0 to 39 and then resets back to 0.
+
+2. Counter Windows
+- Counter values 0–29 = ON window (pump cycle ON).
+- Counter values 30–39 = OFF window (pump cycle OFF).
+
+3. AUTO Mode
+- When AUTO is selected:
+  - If the previous mode was OFF, reset the counter to 0 (fresh cycle).
+  - If the previous mode was HAND, do not reset — continue from the current counter value.
+- AUTO controls the pump based on the ON/OFF windows of the counter.
+
+4. HAND Mode
+- HAND directly energizes the pump output, overriding the timers/counter.
+- The counter continues running in the background while HAND is active.
+- When HAND is released, control returns to the previous mode (AUTO or OFF).
+- If AUTO was active before HAND, the pump will follow the correct counter position (whether ON or OFF) immediately after release.
+
+5. OFF Mode
+- Pump output is always de-energized.
+- (Optional) Reset the counter when switching to OFF, so AUTO always starts from zero on the next start.
+
+6. Alarms
+- Flow Fault:
+  - If the pump is ON and the flow switch does not detect flow for 5 seconds, trigger a flow fault.
+  - Flow fault immediately de-energizes the pump (in AUTO or HAND).
+  - When flow fault occurs, the counter is reset to 0 and the cycle is terminated.
+  - AUTO and HAND mode bits are also reset, so operator must reselect mode after clearing alarm.
+  - Pump cannot restart until the alarm is reset and AUTO or HAND is pressed again.
+  - Flow fault is latched until reset button is pressed, and only clears if flow condition is normal.
+
+- Pressure Fault:
+  - If pressure > 30 psi for 5 seconds, trigger a pressure fault.
+  - Pressure fault immediately de-energizes the pump (in AUTO or HAND).
+  - When pressure fault occurs, the counter is reset to 0 and the cycle is terminated.
+  - AUTO and HAND mode bits are also reset, so operator must reselect mode after clearing alarm.
+  - Pump cannot restart until the alarm is reset and AUTO or HAND is pressed again.
+  - Pressure fault is latched until reset button is pressed, and only clears if pressure is normal.
+
+- Alarm Reset:
+  - Reset button clears latched alarms, but only if fault condition is no longer present.
+  - Alarm silence button only disables alarm horn (if present), does not clear alarm condition.
+
+7. Pump Output
+- Pump ON if:
+  - HAND is pressed, OR
+  - AUTO is active and the counter is within 0–29,
+  - AND no alarms are active.
+- Pump OFF otherwise.
